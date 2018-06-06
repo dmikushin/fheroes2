@@ -21,13 +21,12 @@
  ***************************************************************************/
 
 #include <map>
-#include <cstdlib>
 #include <algorithm>
 
+#include "system.h"
 #include "gamedefs.h"
 #include "tinyconfig.h"
 #include "settings.h"
-#include "game_focus.h"
 #include "maps_tiles.h"
 #include "ground.h"
 #include "world.h"
@@ -43,36 +42,56 @@
 #include "profit.h"
 #include "buildinginfo.h"
 #include "skill.h"
-#include "battle2.h"
+#include "battle.h"
 #include "tools.h"
 #include "difficulty.h"
+#include "game_interface.h"
 #include "game_static.h"
 #include "ai.h"
 #include "game.h"
 
-#ifdef WITH_XML
-#include "xmlccwrap.h"
-#endif
-
 namespace Game
 {
-    u8 GetMixerChannelFromObject(const Maps::Tiles &);
-    void AnimateDelaysInitialize(void);
-    void KeyboardGlobalFilter(int, u16);
-    void UpdateGlobalDefines(const std::string &);
-    void LoadExternalResource(const Settings &);
+    u32		GetMixerChannelFromObject(const Maps::Tiles &);
+    void	AnimateDelaysInitialize(void);
+    void	KeyboardGlobalFilter(int, int);
+    void	UpdateGlobalDefines(const std::string &);
+    void	LoadExternalResource(const Settings &);
 
-    void HotKeysDefaults(void);
-    void HotKeysLoad(const std::string &);
+    void	HotKeysDefaults(void);
+    void	HotKeysLoad(const std::string &);
 
     bool	disable_change_music = false;
-    u16		reserved_vols[LOOPXX_COUNT];
-    u8		current_music = MUS::UNKNOWN;
+    int		current_music = MUS::UNKNOWN;
     u32		castle_animation_frame = 0;
     u32		maps_animation_frame = 0;
+    std::string last_name;
+    int		save_version = CURRENT_FORMAT_VERSION;
+    std::vector<int>
+		reserved_vols(LOOPXX_COUNT, 0);
 }
 
-Game::menu_t Game::Testing(u8 t)
+void Game::SetLoadVersion(int ver)
+{
+    save_version = ver;
+}
+
+int Game::GetLoadVersion(void)
+{
+    return save_version;
+}
+
+const std::string & Game::GetLastSavename(void)
+{
+    return last_name;
+}
+
+void Game::SetLastSavename(const std::string & name)
+{
+    last_name = name;
+}
+
+int Game::Testing(int t)
 {
 #ifndef BUILD_RELEASE
     Test::Run(t);
@@ -82,7 +101,7 @@ Game::menu_t Game::Testing(u8 t)
 #endif
 }
 
-Game::menu_t Game::Credits(void)
+int Game::Credits(void)
 {
     const Settings & conf = Settings::Get();
 
@@ -120,7 +139,7 @@ bool Game::ChangeMusicDisabled(void)
 
 void Game::DisableChangeMusic(bool f)
 {
-    disable_change_music = f;
+    //disable_change_music = f;
 }
 
 void Game::Init(void)
@@ -149,12 +168,12 @@ void Game::Init(void)
     Game::HotKeysLoad(hotkeys);
 }
 
-u8 Game::CurrentMusic(void)
+int Game::CurrentMusic(void)
 {
     return current_music;
 }
 
-void Game::SetCurrentMusic(u8 mus)
+void Game::SetCurrentMusic(int mus)
 {
     current_music = mus;
 }
@@ -174,41 +193,42 @@ void Game::SetFixVideoMode(void)
     const Settings & conf = Settings::Get();
 
     Size fixsize(conf.VideoMode());
+    Size mapSize = conf.MapsSize();
 
-    u16 max_x = Settings::Get().ExtGameHideInterface() ? conf.MapsWidth() * TILEWIDTH :
-			    (6 + conf.MapsWidth()) * TILEWIDTH; // RADARWIDTH + 3 * BORDERWIDTH
-    u16 max_y = Settings::Get().ExtGameHideInterface() ? conf.MapsWidth() * TILEWIDTH :
-			    (1 + conf.MapsWidth()) * TILEWIDTH; // 2 * BORDERWIDTH
+    u32 max_x = Settings::Get().ExtGameHideInterface() ? mapSize.w * TILEWIDTH :
+			    (6 + mapSize.w) * TILEWIDTH; // RADARWIDTH + 3 * BORDERWIDTH
+    u32 max_y = Settings::Get().ExtGameHideInterface() ? mapSize.h * TILEWIDTH :
+			    (1 + mapSize.h) * TILEWIDTH; // 2 * BORDERWIDTH
 
     if(conf.VideoMode().w > max_x) fixsize.w = max_x;
     if(conf.VideoMode().h > max_y) fixsize.h = max_y;
 
-    Display::Get().SetVideoMode(fixsize.w, fixsize.h, conf.DisplayFlags());
+    Display::Get().SetVideoMode(fixsize.w, fixsize.h, conf.FullScreen());
 }
 
 /* play all sound from focus area game */
 void Game::EnvironmentSoundMixer(void)
 {
-    const Point abs_pt(GameFocus::GetCenter());
+    const Point abs_pt(Interface::GetFocusCenter());
     const Settings & conf = Settings::Get();
 
     if(conf.Sound())
     {
-	std::fill(reserved_vols, reserved_vols + LOOPXX_COUNT, 0);
+	std::fill(reserved_vols.begin(), reserved_vols.end(), 0);
 
         // scan 4x4 square from focus
-        for(s16 yy = abs_pt.y - 3; yy <= abs_pt.y + 3; ++yy)
+        for(s32 yy = abs_pt.y - 3; yy <= abs_pt.y + 3; ++yy)
     	{
-    	    for(s16 xx = abs_pt.x - 3; xx <= abs_pt.x + 3; ++xx)
+    	    for(s32 xx = abs_pt.x - 3; xx <= abs_pt.x + 3; ++xx)
 	    {
 		if(Maps::isValidAbsPoint(xx, yy))
 		{
-		    const u8 channel = GetMixerChannelFromObject(world.GetTiles(xx, yy));
-    		    if(channel < LOOPXX_COUNT)
+		    const u32 channel = GetMixerChannelFromObject(world.GetTiles(xx, yy));
+    		    if(channel < reserved_vols.size())
 		    {
 			// calculation volume
-    			const u8 length = std::max(std::abs(xx - abs_pt.x), std::abs(yy - abs_pt.y));
-			const u16 volume = (2 < length ? 4 : (1 < length ? 8 : (0 < length ? 12 : 16))) * Mixer::MaxVolume() / 16;
+    			const int length = std::max(std::abs(xx - abs_pt.x), std::abs(yy - abs_pt.y));
+			const int volume = (2 < length ? 4 : (1 < length ? 8 : (0 < length ? 12 : 16))) * Mixer::MaxVolume() / 16;
 
 			if(volume > reserved_vols[channel]) reserved_vols[channel] = volume;
 		    }
@@ -216,11 +236,11 @@ void Game::EnvironmentSoundMixer(void)
 	    }
 	}
 
-	AGG::Cache::Get().LoadLOOPXXSounds(reserved_vols);
+	AGG::LoadLOOPXXSounds(reserved_vols);
     }
 }
 
-u8 Game::GetMixerChannelFromObject(const Maps::Tiles & tile)
+u32 Game::GetMixerChannelFromObject(const Maps::Tiles & tile)
 {
     // force: check stream
     if(tile.isStream()) return 13;
@@ -228,10 +248,10 @@ u8 Game::GetMixerChannelFromObject(const Maps::Tiles & tile)
     return M82::GetIndexLOOP00XXFromObject(tile.GetObject(false));
 }
 
-u8 Game::GetRating(void)
+u32 Game::GetRating(void)
 {
     Settings & conf = Settings::Get();
-    u8 rating = 50;
+    u32 rating = 50;
 
     switch(conf.MapsDifficulty())
     {
@@ -254,13 +274,13 @@ u8 Game::GetRating(void)
     return rating;
 }
 
-u16 Game::GetGameOverScores(void)
+u32 Game::GetGameOverScores(void)
 {
     Settings & conf = Settings::Get();
 
-    u8 k_size = 0;
+    u32 k_size = 0;
 
-    switch(conf.MapsWidth())
+    switch(conf.MapsSize().w)
     {
 	case Maps::SMALL:	k_size = 140; break;
 	case Maps::MEDIUM:	k_size = 100; break;
@@ -269,11 +289,11 @@ u16 Game::GetGameOverScores(void)
 	default: break;
     }
 
-    u8 flag = 0;
-    u8 nk = 0;
-    u16 end_days = world.CountDay();
+    u32 flag = 0;
+    u32 nk = 0;
+    u32 end_days = world.CountDay();
 
-    for(u16 ii = 1; ii <= end_days; ++ii)
+    for(u32 ii = 1; ii <= end_days; ++ii)
     {
 	nk = ii * k_size / 100;
 
@@ -294,17 +314,17 @@ void Game::ShowLoadMapsText(void)
     TextBox text(_("Maps Loading..."), Font::BIG, pos.w);
 
     // blit test
-    display.Fill(0, 0, 0);
+    display.Fill(ColorBlack);
     text.Blit(pos, display);
     display.Flip();
 }
 
-u8 Game::GetLostTownDays(void)
+u32 Game::GetLostTownDays(void)
 {
     return GameStatic::GetGameOverLostDays();
 }
 
-u8 Game::GetViewDistance(u8 d)
+u32 Game::GetViewDistance(u32 d)
 {
     return GameStatic::GetOverViewDistance(d);
 }
@@ -331,7 +351,7 @@ void Game::UpdateGlobalDefines(const std::string & spec)
 	WhirlpoolUpdateStatic(xml_globals->FirstChildElement("whirlpool"));
 	// heroes
 	HeroesUpdateStatic(xml_globals->FirstChildElement("heroes"));
-	// castle_extra_growth 
+	// castle_extra_growth
 	CastleUpdateGrowth(xml_globals->FirstChildElement("castle_extra_growth"));
 	// monster upgrade ratio
 	MonsterUpdateStatic(xml_globals->FirstChildElement("monster_upgrade"));
@@ -341,7 +361,7 @@ void Game::UpdateGlobalDefines(const std::string & spec)
 #endif
 }
 
-u8 Game::GetWhirlpoolPercent(void)
+u32 Game::GetWhirlpoolPercent(void)
 {
     return GameStatic::GetLostOnWhirlpoolPercent();
 }
@@ -349,95 +369,92 @@ u8 Game::GetWhirlpoolPercent(void)
 void Game::LoadExternalResource(const Settings & conf)
 {
     std::string spec;
-    const std::string prefix_stats = std::string("files") + SEPARATOR + std::string("stats");
+    const std::string prefix_stats = System::ConcatePath("files", "stats");
 
     // globals.xml
     spec = Settings::GetLastFile(prefix_stats, "globals.xml");
 
-    if(IsFile(spec))
+    if(System::IsFile(spec))
 	Game::UpdateGlobalDefines(spec);
 
     // animations.xml
     spec = Settings::GetLastFile(prefix_stats, "animations.xml");
 
-    if(IsFile(spec))
-	Battle2::UpdateMonsterInfoAnimation(spec);
+    if(System::IsFile(spec))
+	Battle::UpdateMonsterSpriteAnimation(spec);
 
     // battle.xml
     spec = Settings::GetLastFile(prefix_stats, "battle.xml");
 
-    if(IsFile(spec))
-	Battle2::UpdateMonsterAttributes(spec);
+    if(System::IsFile(spec))
+	Battle::UpdateMonsterAttributes(spec);
 
     // monsters.xml
     spec = Settings::GetLastFile(prefix_stats, "monsters.xml");
 
-    if(IsFile(spec))
+    if(System::IsFile(spec))
 	Monster::UpdateStats(spec);
 
     // spells.xml
     spec = Settings::GetLastFile(prefix_stats, "spells.xml");
 
-    if(IsFile(spec))
+    if(System::IsFile(spec))
 	Spell::UpdateStats(spec);
 
     // artifacts.xml
     spec = Settings::GetLastFile(prefix_stats, "artifacts.xml");
 
-    if(IsFile(spec))
+    if(System::IsFile(spec))
 	Artifact::UpdateStats(spec);
 
     // buildings.xml
     spec = Settings::GetLastFile(prefix_stats, "buildings.xml");
 
-    if(IsFile(spec))
+    if(System::IsFile(spec))
 	BuildingInfo::UpdateCosts(spec);
 
     // payments.xml
     spec = Settings::GetLastFile(prefix_stats, "payments.xml");
 
-    if(IsFile(spec))
+    if(System::IsFile(spec))
 	PaymentConditions::UpdateCosts(spec);
 
     // profits.xml
     spec = Settings::GetLastFile(prefix_stats, "profits.xml");
 
-    if(IsFile(spec))
+    if(System::IsFile(spec))
 	ProfitConditions::UpdateCosts(spec);
 
     // skills.xml
     spec = Settings::GetLastFile(prefix_stats, "skills.xml");
 
-    if(IsFile(spec))
+    if(System::IsFile(spec))
 	Skill::UpdateStats(spec);
 }
 
-std::string Game::GetEncodeString(const char* str)
+std::string Game::GetEncodeString(const std::string & str1)
 {
     const Settings & conf = Settings::Get();
-    std::string str1(str);
-    std::string str2(_(str));
 
     // encode name
-    if(str1 == str2 && str1.size() &&
-       conf.Unicode() && conf.MapsCharset().size())
-	str2 = EncodeString(str1, conf.MapsCharset().c_str());
+    if(conf.Unicode() && conf.MapsCharset().size())
+	return EncodeString(str1.c_str(), conf.MapsCharset().c_str());
 
-    return str2;
+    return str1;
 }
 
-u8 Game::GetKingdomColors(void)
+int Game::GetKingdomColors(void)
 {
     return Settings::Get().GetPlayers().GetColors();
 }
 
-u8 Game::GetActualKingdomColors(void)
+int Game::GetActualKingdomColors(void)
 {
     return Settings::Get().GetPlayers().GetActualColors();
 }
 
 #include <cmath>
-std::string Game::CountScoute(u32 count, u8 scoute)
+std::string Game::CountScoute(u32 count, int scoute, bool shorts)
 {
     float infelicity = 0;
     std::string res;
@@ -453,7 +470,7 @@ std::string Game::CountScoute(u32 count, u8 scoute)
             break;
 
         case Skill::Level::EXPERT:
-            res = GetString(count);
+            res = shorts ? GetStringShort(count) : GetString(count);
             break;
 
         default:
@@ -484,4 +501,24 @@ std::string Game::CountScoute(u32 count, u8 scoute)
     }
 
     return res;
+}
+
+void Game::PlayPickupSound(void)
+{
+    int wav = M82::UNKNOWN;
+
+    switch(Rand::Get(1, 7))
+    {
+        case 1: wav = M82::PICKUP01; break;
+        case 2: wav = M82::PICKUP02; break;
+        case 3: wav = M82::PICKUP03; break;
+        case 4: wav = M82::PICKUP04; break;
+        case 5: wav = M82::PICKUP05; break;
+        case 6: wav = M82::PICKUP06; break;
+        case 7: wav = M82::PICKUP07; break;
+
+        default: return;
+    }
+
+    AGG::PlaySound(wav);
 }

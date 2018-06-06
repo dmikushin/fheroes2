@@ -21,6 +21,8 @@
  ***************************************************************************/
 
 #include "agg.h"
+#include "icn.h"
+#include "text.h"
 #include "settings.h"
 #include "cursor.h"
 #include "button.h"
@@ -47,10 +49,9 @@ void Dialog::GameInfo(void)
     cursor.SetThemes(cursor.POINTER);
 
     const Sprite & dlg = AGG::GetICN(ICN::SCENIBKG, 0);
-    const Point pt((display.w() - dlg.w()) / 2, (display.h() - dlg.h()) / 2);
-    Background back(pt, dlg.w(), dlg.h());
 
-    back.Save();
+    SpriteBack back(Rect((display.w() - dlg.w()) / 2, (display.h() - dlg.h()) / 2, dlg.w(), dlg.h()));
+    const Point & pt = back.GetPos();
     dlg.Blit(pt);
 
     TextBox text;
@@ -79,7 +80,7 @@ void Dialog::GameInfo(void)
     text.Set(GetString(Game::GetRating()) + " %", Font::SMALL, 80);
     text.Blit(pt.x + 230, pt.y + 80);
 
-    text.Set(Maps::SizeString(conf.MapsWidth()), Font::SMALL, 80);
+    text.Set(Maps::SizeString(conf.MapsSize().w), Font::SMALL, 80);
     text.Blit(pt.x + 322, pt.y + 80);
 
     text.Set(conf.MapsDescription(), Font::SMALL, 350);
@@ -91,7 +92,7 @@ void Dialog::GameInfo(void)
     text.Set(_("Class"), Font::SMALL, 350);
     text.Blit(pt.x + 52, pt.y + 225);
 
-    Interface::PlayersInfo playersInfo(true, false, false);
+    Interface::PlayersInfo playersInfo(true, true, false);
 
     playersInfo.UpdateInfo(conf.GetPlayers(), Point(pt.x + 40, pt.y + 165), Point(pt.x + 40, pt.y + 240));
     playersInfo.RedrawInfo(true);
@@ -132,7 +133,7 @@ void Dialog::GameInfo(void)
 	{
 	    Dialog::ExtSettings(true);
 	    Cursor::Get().Show();
-	    Display::Flip();
+	    Display::Get().Flip();
 	}
 
         if(le.MouseClickLeft(buttonOk) ||

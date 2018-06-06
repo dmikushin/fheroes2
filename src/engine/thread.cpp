@@ -20,7 +20,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include <iostream>
+#include "system.h"
 #include "thread.h"
 
 using namespace SDL;
@@ -45,7 +45,11 @@ Thread & Thread::operator= (const Thread &)
 
 void Thread::Create(int (*fn)(void *), void *param)
 {
+#if SDL_VERSION_ATLEAST(2, 0, 0)
+    thread = SDL_CreateThread(fn, "", param);
+#else
     thread = SDL_CreateThread(fn, param);
+#endif
 }
 
 int Thread::Wait(void)
@@ -58,8 +62,11 @@ int Thread::Wait(void)
 
 void Thread::Kill(void)
 {
+#if SDL_VERSION_ATLEAST(2, 0, 0)
+#else
     if(thread) SDL_KillThread(thread);
     thread = NULL;
+#endif
 }
 
 bool Thread::IsRun(void) const
@@ -110,19 +117,19 @@ Timer::Timer() : id(0)
 {
 }
 
-void Timer::Run(Timer & timer, u32 interval, u32 (*fn)(u32, void *), void *param)
+void Timer::Run(u32 interval, u32 (*fn)(u32, void *), void *param)
 {
-    if(timer.id) Remove(timer);
+    if(id) Remove();
 
-    timer.id = SDL_AddTimer(interval, fn, param);
+    id = SDL_AddTimer(interval, fn, param);
 }
 
-void Timer::Remove(Timer & timer)
+void Timer::Remove(void)
 {
-    if(timer.id)
+    if(id)
     {
-	SDL_RemoveTimer(timer.id);
-	timer.id = 0;
+	SDL_RemoveTimer(id);
+	id = 0;
     }
 }
 
@@ -152,5 +159,5 @@ u32 Time::Get(void) const
 
 void Time::Print(const char* header) const
 {
-    std::cerr << (header ? header : "time: ") << Get() << " ms" << std::endl;
+    ERROR((header ? header : "time: ") << Get() << " ms");
 }

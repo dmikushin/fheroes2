@@ -20,30 +20,28 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include <sys/stat.h>
-#include <sys/types.h>
-
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <iomanip>
+
 #include "SDL.h"
 #include "engine.h"
+#include "system.h"
 
 int main(int argc, char **argv)
 {
     if(argc != 3)
     {
 	std::cout << argv[0] << " [-d] infile.til extract_to_dir" << std::endl;
-
 	return EXIT_SUCCESS;
     }
 
-    std::fstream fd_data(argv[1], std::ios::in | std::ios::binary);
+    StreamFile sf;
 
-    if(fd_data.fail())
+    if(! sf.open(argv[1], "rb"))
     {
 	std::cout << "error open file: " << argv[1] << std::endl;
-
 	return EXIT_SUCCESS;
     }
 
@@ -55,77 +53,44 @@ int main(int argc, char **argv)
     }
 
     shortname.replace(shortname.find("."), 4, "");
-    
-    prefix += SEPARATOR + shortname;
+    prefix = System::ConcatePath(prefix, shortname);
 
-    if(0 != MKDIR(prefix.c_str()))
+    if(0 != System::MakeDirectory(prefix))
     {
 	std::cout << "error mkdir: " << prefix << std::endl;
-
 	return EXIT_SUCCESS;
     }
 
-    fd_data.seekg(0, std::ios_base::end);
-    u32 size = fd_data.tellg();
-    fd_data.seekg(0, std::ios_base::beg);
-
-    u16 count, width, height;
-    
-    fd_data.read(reinterpret_cast<char *>(&count), sizeof(u16));
-    SwapLE16(count);
-
-    fd_data.read(reinterpret_cast<char *>(&width), sizeof(u16));
-    SwapLE16(width);
-
-    fd_data.read(reinterpret_cast<char *>(&height), sizeof(u16));
-    SwapLE16(height);
-
-    char *body = new char[size];
-
-    fd_data.read(body, size);
+    int size = sf.size();
+    int count = sf.getLE16();
+    int width = sf.getLE16();
+    int height = sf.getLE16();
+    std::vector<u8> buf = sf.getRaw(size);
 
     SDL::Init();
 
-    for(u16 cur = 0; cur < count; ++cur)
+    for(int cur = 0; cur < count; ++cur)
     {
-	Surface sf(&body[width * height * cur], width, height, 1, false);
-	std::string dstfile(prefix);
+	u32 offset = width * height * cur;
+	if(offset < buf.size())
+	{
+	    Surface sf(& buf[offset], width, height, 1, false);
 
-	dstfile += SEPARATOR;
-
-	std::ostringstream stream;
-        stream << cur;
-
-        switch(stream.str().size())
-        {
-    	    case 1:
-    		dstfile += "00" + stream.str();
-    		break;
-
-    	    case 2:
-    		dstfile += "0" + stream.str();
-    		break;
-
-    	    default:
-    		dstfile += stream.str();
-    		break;
-        }
+	    std::ostringstream stream;
+    	    stream << std::setw(3) << std::setfill('0') << cur;
+	    std::string dstfile = System::ConcatePath(prefix, stream.str());
 
 #ifndef WITH_IMAGE
-        dstfile += ".bmp";
+    	    dstfile += ".bmp";
 #else
-        dstfile += ".png";
+    	    dstfile += ".png";
 #endif
-        sf.Save(dstfile.c_str());
+    	    sf.Save(dstfile.c_str());
+	}
     }
 
-    delete [] body;
-
-    fd_data.close();
-
+    sf.close();
     std::cout << "expand to: " << prefix << std::endl;
-
     SDL::Quit();
-
     return EXIT_SUCCESS;
 }
