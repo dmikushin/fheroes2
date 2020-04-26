@@ -52,7 +52,6 @@ void Background::Save(void)
     if(! Surface::isValid())
     {
 	Set(Rect::w, Rect::h, false);
-	SetDisplayFormat();
     }
     display.Blit(*this, 0, 0, *this);
 }
