@@ -26,7 +26,7 @@
 #include "gamedefs.h"
 #include "battle_arena.h"
 
-namespace Army { class Troop; }
+namespace army { class Troop; }
 
 namespace Battle2
 {

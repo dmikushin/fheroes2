@@ -27,7 +27,7 @@
 
 namespace ICN
 {
-    enum
+    enum icn_t
     {
 	UNKNOWN,
 	ADVBORDE,

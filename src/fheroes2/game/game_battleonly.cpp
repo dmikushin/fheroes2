@@ -84,9 +84,9 @@ struct BattleOnly
     Player	player1;
     Player	player2;
 
-    Army::army_t* army1;
-    Army::army_t* army2;
-    Army::army_t monsters;
+    army::Army* army1;
+    army::Army* army2;
+    army::Army monsters;
 
     MoraleIndicator* moraleIndicator1;
     MoraleIndicator* moraleIndicator2;
@@ -233,7 +233,7 @@ bool BattleOnly::ChangeSettings(void)
 	selectArmy2.Redraw();
     }
 
-    monsters.At(0) = Army::Troop(Monster::PEASANT, 100);
+    monsters.At(0) = army::Troop(Monster::PEASANT, 100);
     army2 = hero2 ? &hero2->GetArmy() : &monsters;
 
     selectArmy2.SetArmy(*army2);

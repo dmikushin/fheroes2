@@ -34,7 +34,7 @@
 #include "localclient.h"
 #endif
 
-namespace Army { class army_t; }
+namespace army { class Army; }
 namespace Battle2
 {
     struct Stats;
@@ -59,7 +59,7 @@ namespace Battle2
 	u32  exp2;
     };
 
-    Result Loader(Army::army_t &, Army::army_t &, s32);
+    Result Loader(army::Army &, army::Army &, s32);
     void UpdateMonsterInfoAnimation(const std::string &);
     void UpdateMonsterAttributes(const std::string &);
 

@@ -50,8 +50,8 @@ namespace Battle2
     direction_t GetDirectionFromCursorSword(u16);
     u16         GetCursorFromSpell(u8);
 
-    bool ArmyNextIdleAnimation(Army::army_t &);
-    bool ArmySetIdleAnimation(Army::army_t &);
+    bool ArmyNextIdleAnimation(army::Army &);
+    bool ArmySetIdleAnimation(army::Army &);
 
     struct CursorPosition
     {
@@ -3897,13 +3897,13 @@ void Battle2::Interface::RedrawBridgeAnimation(bool down)
     if(!down) AGG::PlaySound(M82::DRAWBRG);
 }
 
-bool Battle2::ArmySetIdleAnimation(Army::army_t & army)
+bool Battle2::ArmySetIdleAnimation(army::Army & army)
 {
     bool res = false;
 
     for(u8 ii = 0; ii < army.Size(); ++ii)
     {
-	Army::Troop & troop = army.At(ii);
+	army::Troop & troop = army.At(ii);
 	if(troop.isValid())
 	{
 	    Stats* b = troop.GetBattleStats();
@@ -3924,13 +3924,13 @@ bool Battle2::ArmySetIdleAnimation(Army::army_t & army)
     return res;
 }
 
-bool Battle2::ArmyNextIdleAnimation(Army::army_t & army)
+bool Battle2::ArmyNextIdleAnimation(army::Army & army)
 {
     bool res = false;
 
     for(u8 ii = 0; ii < army.Size(); ++ii)
     {
-	Army::Troop & troop = army.At(ii);
+	army::Troop & troop = army.At(ii);
 	if(troop.isValid())
 	{
 	    Stats* b = troop.GetBattleStats();
@@ -4056,7 +4056,7 @@ void Battle2::Interface::ProcessingHeroDialogResult(u8 res, Actions & a)
 	//surrender
 	case 3:
 	{
-	    const Army::army_t & army = arena.army1.GetColor() == arena.current_color ? arena.army1 : arena.army2;
+	    const army::Army & army = arena.army1.GetColor() == arena.current_color ? arena.army1 : arena.army2;
 	    const HeroBase* enemy = arena.army1.GetColor() == arena.current_color ? arena.army2.GetCommander() : arena.army1.GetCommander();
 	    const u32 cost = army.GetSurrenderCost();
 	    if(enemy && DialogBattleSurrender(*enemy, cost))

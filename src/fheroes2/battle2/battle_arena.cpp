@@ -681,7 +681,7 @@ void Battle2::GraveyardTroop::RemoveTroop(const Stats & b)
     }
 }
 
-Battle2::Arena::Arena(Army::army_t & a1, Army::army_t & a2, s32 index, bool local) :
+Battle2::Arena::Arena(army::Army & a1, army::Army & a2, s32 index, bool local) :
 	army1(a1), army2(a2), castle(NULL), current_color(0), catapult(NULL), bridge(NULL), interface(NULL), result_game(NULL),
 	icn_covr(ICN::UNKNOWN), current_turn(0), auto_battle(0)
 {
@@ -699,8 +699,8 @@ Battle2::Arena::Arena(Army::army_t & a1, Army::army_t & a2, s32 index, bool loca
     for(u8 ii = 0; ii < army1.Size(); ++ii)
     {
 	// place army1 troops
-	const u8 index1 = Army::FORMAT_SPREAD == army1.GetCombatFormat() ? ii * 22 : 22 + ii * 11;
-	Army::Troop & troop1 = army1.At(ii);
+	const u8 index1 = army::FORMAT_SPREAD == army1.GetCombatFormat() ? ii * 22 : 22 + ii * 11;
+	army::Troop & troop1 = army1.At(ii);
 	if(troop1.isValid() && troop1.BattleInit())
 	{
 	    Stats* stats = troop1.GetBattleStats();
@@ -714,8 +714,8 @@ Battle2::Arena::Arena(Army::army_t & a1, Army::army_t & a2, s32 index, bool loca
     for(u8 ii = 0; ii < army2.Size(); ++ii)
     {
     	// place army2 troops
-	const u8 index2 = Army::FORMAT_SPREAD == army2.GetCombatFormat() ? 10 + ii * 22 : 32 + ii * 11;
-	Army::Troop & troop2 = army2.At(ii);
+	const u8 index2 = army::FORMAT_SPREAD == army2.GetCombatFormat() ? 10 + ii * 22 : 32 + ii * 11;
+	army::Troop & troop2 = army2.At(ii);
 	if(troop2.isValid() && troop2.BattleInit())
 	{
 	    Stats* stats = troop2.GetBattleStats();
@@ -1219,7 +1219,7 @@ const Battle2::Stats* Battle2::Arena::GetTroopBoard(u16 index) const
     return NULL;
 }
 
-const Army::army_t* Battle2::Arena::GetArmy(u8 color) const
+const army::Army* Battle2::Arena::GetArmy(u8 color) const
 {
     if(army1.GetColor() == color) return &army1;
     else
@@ -1228,7 +1228,7 @@ const Army::army_t* Battle2::Arena::GetArmy(u8 color) const
     return NULL;
 }
 
-Army::army_t* Battle2::Arena::GetArmy(u8 color)
+army::Army* Battle2::Arena::GetArmy(u8 color)
 {
     if(army1.GetColor() == color) return &army1;
     else
@@ -1241,7 +1241,7 @@ void Battle2::Arena::GetArmyPositions(u8 color, std::vector<u16> & res) const
 {
     if(res.size()) res.clear();
 
-    const Army::army_t* army = GetArmy(color);
+    const army::Army* army = GetArmy(color);
     if(army)
     {
 	for(u8 ii = 0; ii < army->Size(); ++ii)
@@ -1251,13 +1251,13 @@ void Battle2::Arena::GetArmyPositions(u8 color, std::vector<u16> & res) const
 
 Battle2::Stats* Battle2::Arena::GetTroopID(u16 id)
 {
-    Army::army_t* army = GetArmy(id >> 8);
+    army::Army* army = GetArmy(id >> 8);
     return army && army->Size() > (0x000F & id) ? army->At(0x000F & id).GetBattleStats() : NULL;
 }
 
 const Battle2::Stats* Battle2::Arena::GetTroopID(u16 id) const
 {
-    const Army::army_t* army = GetArmy(id >> 8);
+    const army::Army* army = GetArmy(id >> 8);
     return army && army->Size() > (0x000F & id) ? army->At(0x000F & id).GetBattleStats() : NULL;
 }
 
@@ -1738,13 +1738,13 @@ void Battle2::Arena::UnpackBoard(Action & msg)
 
 const HeroBase* Battle2::Arena::GetCommander(u8 color) const
 {
-    const Army::army_t* army = GetArmy(color);
+    const army::Army* army = GetArmy(color);
     return army ? army->GetCommander() : NULL;
 }
 
 HeroBase* Battle2::Arena::GetCommander(u8 color)
 {
-    Army::army_t* army = GetArmy(color);
+    army::Army* army = GetArmy(color);
     return army ? army->GetCommander() : NULL;
 }
 

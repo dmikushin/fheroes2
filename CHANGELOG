@@ -139,7 +139,7 @@ Sep, 09, 2011 (2551 rev.)
 + Fixed: music: castle music when hero open/close dialog
 + Fixed: game: heroes attack to castle (with hero present)
 + Added: option: castle: allow recruits special/expansion heroes
-+ Update: battle: Army::Dialog: added spell duration info
++ Update: battle: army::Dialog: added spell duration info
 + Update: QuickDialog for hero, disable show level for enemy hero
 + Fixed: hotseat: view AI move for all local players, unions: fixed maps view
 + Fixed: game: crash select maps, remove old save format support
@@ -192,7 +192,7 @@ Aug, 04, 2011 (2440 rev.)
 + Fixed: game: AI recruit hero, fixed: recruit hero and surrender status
 + Fixed  game: crash, Castle::ActionNewWeek, Castle::ActionNewMonth
 + Fixed: AI: recruit troops for castles
-+ Fixed: game: Army::color null after load game
++ Fixed: game: army::color null after load game
 + Update: xml resources
 + Fixed: AI: add prioritize range attackers and others...
 + Added: game: WeekOfMonster can be 1 in every 3
@@ -205,7 +205,7 @@ Aug, 04, 2011 (2440 rev.)
 Jun, 26, 2011 (2390 rev.)
 
 + Update: translation: (ru, sv, es, hu, pl)
-+ Fixed: game: Army::GetSurrenderCost
++ Fixed: game: army::GetSurrenderCost
 + Fixed: game: days period for lost hero
 + Fixed: game: percents string
 + Fixed: game: scroll spells for meeting heroes
@@ -880,8 +880,8 @@ Users
 
 Developers
 
-+ Army::Troops has been split into Army::Troop (for storing monster type, total
-  number, and primary skill) and Army::BattleTroop, which holds information
++ army::Troops has been split into army::Troop (for storing monster type, total
+  number, and primary skill) and army::BattleTroop, which holds information
   about animation, hit points, and position. (revvy)
 + Fixed a couple endian issues, so fheroes2 should theoretically work perfectly
   on MacOS (revvy, afletdinov)

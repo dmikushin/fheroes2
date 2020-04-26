@@ -95,7 +95,7 @@ std::string ShowMonsterInfo(const Maps::Tiles & tile, int scoute)
 	StringReplace(str, "%{monster}", StringLower(troop.GetMultiName()));
     }
     else
-	str = Army::TroopSizeString(troop);
+	str = army::TroopSizeString(troop);
 
     return str;
 }
@@ -679,10 +679,10 @@ void Dialog::QuickInfo(const Castle & castle)
     else
     if(castle.isFriends(conf.CurrentColor()))
 	// show all
-	Army::DrawMons32Line(castle.GetArmy(), cur_rt.x - 5, cur_rt.y + 100, 192);
+	army::DrawMons32Line(castle.GetArmy(), cur_rt.x - 5, cur_rt.y + 100, 192);
     else
 	// show limited
-	Army::DrawMons32LineWithScoute(castle.GetArmy(), cur_rt.x - 5, cur_rt.y + 100, 192, 0, 0,
+	army::DrawMons32LineWithScoute(castle.GetArmy(), cur_rt.x - 5, cur_rt.y + 100, 192, 0, 0,
 				(from_hero && from_hero->CanScouteTile(castle.GetIndex()) ? from_hero->GetSecondaryValues(Skill::Secondary::SCOUTING) : Skill::Level::NONE));
 
     cursor.Show();
@@ -895,10 +895,10 @@ void Dialog::QuickInfo(const Heroes & hero)
 
     if(hero.isFriends(conf.CurrentColor()))
 	// show all
-	Army::DrawMons32Line(hero.GetArmy(), cur_rt.x - 5, cur_rt.y + 114, 160);
+	army::DrawMons32Line(hero.GetArmy(), cur_rt.x - 5, cur_rt.y + 114, 160);
     else
 	// show limited
-	Army::DrawMons32LineWithScoute(hero.GetArmy(), cur_rt.x - 5, cur_rt.y + 114, 160, 0, 0,
+	army::DrawMons32LineWithScoute(hero.GetArmy(), cur_rt.x - 5, cur_rt.y + 114, 160, 0, 0,
 				(from_hero && from_hero->CanScouteTile(hero.GetIndex()) ? from_hero->GetSecondaryValues(Skill::Secondary::SCOUTING) : Skill::Level::NONE));
 
     cursor.Show();

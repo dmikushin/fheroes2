@@ -36,7 +36,7 @@ namespace Battle2
     class Arena;
     class Stats;
     class QueueMessage;
-    class Actions;
+    struct Actions;
     class Tower;
     struct TargetInfo;
     struct TargetsInfo;

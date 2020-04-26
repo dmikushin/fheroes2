@@ -35,7 +35,7 @@
 #define ARENAH 9
 #define ARENASIZE ARENAW * ARENAH
 
-namespace Army { class Troop; }
+namespace army { class Troop; }
 class Castle;
 class HeroBase;
 
@@ -102,7 +102,7 @@ namespace Battle2
     class Arena
     {
     public:
-	Arena(Army::army_t &, Army::army_t &, s32, bool);
+	Arena(army::Army &, army::Army &, s32, bool);
 	~Arena();
 
 	void Turns(u16, Result &);
@@ -130,8 +130,8 @@ namespace Battle2
 	Stats* GetLastTroopFromGraveyard(u16);
 	const Stats* GetLastTroopFromGraveyard(u16) const;
 
-	Army::army_t* GetArmy(u8);
-	const Army::army_t* GetArmy(u8) const;
+	army::Army* GetArmy(u8);
+	const army::Army* GetArmy(u8) const;
 	
 	void GetArmyPositions(u8, std::vector<u16> &) const;
 	u16 GetMaxQualityPosition(const std::vector<u16> &) const;
@@ -227,8 +227,8 @@ namespace Battle2
 
 	void TurnTroop(Stats*);
 
-	Army::army_t & army1;
-        Army::army_t & army2;
+	army::Army & army1;
+        army::Army & army2;
 
 	const Castle* castle;
 	u8 current_color;

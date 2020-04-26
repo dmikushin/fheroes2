@@ -25,6 +25,7 @@
 #include "maps.h"
 #include "world.h"
 #include "direction.h"
+#include "ground.h"
 #include "settings.h"
 #include "heroes.h"
 #include "route.h"
@@ -152,7 +153,7 @@ bool Algorithm::PathFind(std::list<Route::Step> *result, const s32 from, const s
     std::map<s32, cell_t> list;
     std::map<s32, cell_t>::iterator it1 = list.begin();
     std::map<s32, cell_t>::iterator it2 = list.end();
-    Direction::vector_t direct = Direction::CENTER;
+    int direct = Direction::CENTER;
 
     list[cur].cost_g = 0;
     list[cur].cost_t = 0;
@@ -178,7 +179,7 @@ bool Algorithm::PathFind(std::list<Route::Step> *result, const s32 from, const s
 			if(MAXU16 == costg) continue;
 
 			if((list[cur].passbl & direct) ||
-			   PassableFromToTile(hero, cur, tmp, direct, to))
+			   PassableFromToTile(hero, cur, tmp, (Direction::vector_t)direct, to))
 			{
 			    list[cur].passbl |= direct;
 
@@ -196,7 +197,7 @@ bool Algorithm::PathFind(std::list<Route::Step> *result, const s32 from, const s
 			alt = Maps::Ground::GetPenalty(cur, direct, pathfinding);
 			if(list[tmp].cost_t > list[cur].cost_t + alt &&
 			   ((list[cur].passbl & direct) ||
-			     PassableFromToTile(hero, cur, tmp, direct, to)))
+			     PassableFromToTile(hero, cur, tmp, (Direction::vector_t)direct, to)))
 			{
 			    list[cur].passbl |= direct;
 

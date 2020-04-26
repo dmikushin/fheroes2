@@ -196,9 +196,9 @@ void Battle2::Arena::DialogBattleSummary(const Result & res) const
     LocalEvent & le = LocalEvent::Get();
     Settings & conf = Settings::Get();
 
-    Army::army_t killed1;
+    army::Army killed1;
     army1.BattleExportKilled(killed1);
-    Army::army_t killed2;
+    army::Army killed2;
     army2.BattleExportKilled(killed2);
 
 
@@ -295,7 +295,7 @@ void Battle2::Arena::DialogBattleSummary(const Result & res) const
     text.Blit(pos_rt.x + (pos_rt.w - text.w()) / 2, pos_rt.y + (conf.QVGA() ? 70 : 285));
 
     if(killed1.isValid())
-	Army::DrawMons32Line(killed1, pos_rt.x + 25, pos_rt.y + (conf.QVGA() ? 83 : 303), 270);
+	army::DrawMons32Line(killed1, pos_rt.x + 25, pos_rt.y + (conf.QVGA() ? 83 : 303), 270);
     else
     {
 	text.Set("None", Font::SMALL);
@@ -307,7 +307,7 @@ void Battle2::Arena::DialogBattleSummary(const Result & res) const
     text.Blit(pos_rt.x + (pos_rt.w - text.w()) / 2, pos_rt.y + (conf.QVGA() ? 120 : 345));
 
     if(killed2.isValid())
-	Army::DrawMons32Line(killed2, pos_rt.x + 25, pos_rt.y + (conf.QVGA() ? 138 : 363), 270);
+	army::DrawMons32Line(killed2, pos_rt.x + 25, pos_rt.y + (conf.QVGA() ? 138 : 363), 270);
     else
     {
 	text.Set("None", Font::SMALL);

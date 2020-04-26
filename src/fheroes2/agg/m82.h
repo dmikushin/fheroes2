@@ -29,7 +29,7 @@
 
 namespace M82
 {
-    enum
+    enum m82_t
     {
 	AELMATTK,
 	AELMKILL,

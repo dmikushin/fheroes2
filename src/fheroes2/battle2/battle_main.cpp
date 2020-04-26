@@ -43,10 +43,10 @@ namespace Battle2
 {
     void PickupArtifactsAction(HeroBase &, HeroBase &, bool);
     void EagleEyeSkillAction(HeroBase &, const SpellStorage &, bool);
-    void NecromancySkillAction(Army::army_t &, u32, bool);
+    void NecromancySkillAction(army::Army &, u32, bool);
 }
 
-Battle2::Result Battle2::Loader(Army::army_t & army1, Army::army_t & army2, s32 mapsindex)
+Battle2::Result Battle2::Loader(army::Army & army1, army::Army & army2, s32 mapsindex)
 {
     const Settings & conf = Settings::Get();
 
@@ -106,14 +106,14 @@ Battle2::Result Battle2::Loader(Army::army_t & army1, Army::army_t & army2, s32 
 
     AGG::ResetMixer();
 
-    Army::army_t *army_wins = (result.army1 & RESULT_WINS ? &army1 : (result.army2 & RESULT_WINS ? &army2 : NULL));
-    Army::army_t *army_loss = (result.army1 & RESULT_LOSS ? &army1 : (result.army2 & RESULT_LOSS ? &army2 : NULL));
+    army::Army *army_wins = (result.army1 & RESULT_WINS ? &army1 : (result.army2 & RESULT_WINS ? &army2 : NULL));
+    army::Army *army_loss = (result.army1 & RESULT_LOSS ? &army1 : (result.army2 & RESULT_LOSS ? &army2 : NULL));
     const u8 loss_result =  result.army1 & RESULT_LOSS ? result.army1 : result.army2;
 
     // fix experience
     if(army_wins && army_loss)
     {
-	Army::army_t killed1, killed2;
+	army::Army killed1, killed2;
 	army1.BattleExportKilled(killed1);
 	army2.BattleExportKilled(killed2);
 	result.exp1 = killed2.CalculateExperience();
@@ -265,7 +265,7 @@ void Battle2::EagleEyeSkillAction(HeroBase & hero, const SpellStorage & spells, 
     hero.AppendSpellsToBook(new_spells, true);
 }
 
-void Battle2::NecromancySkillAction(Army::army_t & army1, u32 killed, bool local)
+void Battle2::NecromancySkillAction(army::Army & army1, u32 killed, bool local)
 {
     if(0 == killed ||
 	(army1.GetCount() == army1.Size() && !army1.HasMonster(Monster::SKELETON))) return;

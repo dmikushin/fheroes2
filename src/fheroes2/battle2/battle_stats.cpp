@@ -301,7 +301,7 @@ u32 Battle2::ModesAffected::FindZeroDuration(void) const
     return it == end() ? 0 : (*it).first;
 }
 
-Battle2::Stats::Stats(Army::Troop & t)
+Battle2::Stats::Stats(army::Troop & t)
     : troop(t), arena(NULL), id(0), position(0), hp(0), count(0), dead(0), shots(t.GetShots()), disruptingray(0),
     reflect(false), mirror(NULL), animstate(0), animframe(0), animstep(1)
 {
@@ -441,7 +441,7 @@ void Battle2::Stats::SetRandomMorale(void)
 void Battle2::Stats::SetRandomLuck(void)
 {
     //check bone dragon
-    const Army::army_t* enemy = arena->GetArmy(arena->GetOppositeColor(troop.GetColor()));
+    const army::Army* enemy = arena->GetArmy(arena->GetOppositeColor(troop.GetColor()));
 
     s8 f = troop.GetLuck();
     if(enemy && enemy->HasMonster(Monster::BONE_DRAGON)) --f;
@@ -589,7 +589,7 @@ void Battle2::Stats::NewTurn(void)
 	if(mode == CAP_MIRRORIMAGE)
 	{
     	    if(arena->interface) arena->interface->RedrawActionRemoveMirrorImage(*mirror);
-	    Army::Troop & mirror_troop = mirror->troop;
+	    army::Troop & mirror_troop = mirror->troop;
 	    mirror_troop.BattleQuit();
 	    mirror_troop.Reset();
 	    mirror = NULL;
@@ -2132,12 +2132,12 @@ u8 Battle2::Stats::GetColor(void) const
     return (Modes(SP_BERSERKER) ? 0 : Modes(SP_HYPNOTIZE) ? arena->GetOppositeColor(troop.GetColor()) : troop.GetColor());
 }
 
-const Army::army_t* Battle2::Stats::GetArmy(void) const
+const army::Army* Battle2::Stats::GetArmy(void) const
 {
     return arena ? arena->GetArmy(troop.GetColor()) : NULL;
 }
 
-Army::army_t* Battle2::Stats::GetArmy(void)
+army::Army* Battle2::Stats::GetArmy(void)
 {
     return arena ? arena->GetArmy(troop.GetColor()) : NULL;
 }
@@ -2156,22 +2156,22 @@ namespace Battle2
 {
     bool SlowestStats(const Stats* b1, const Stats* b2)
     {
-	return Army::SlowestTroop(b1->troop, b2->troop);
+	return army::SlowestTroop(b1->troop, b2->troop);
     }
 
     bool FastestStats(const Stats* b1, const Stats* b2)
     {
-	return Army::SlowestTroop(b2->troop, b1->troop);
+	return army::SlowestTroop(b2->troop, b1->troop);
     }
 
     bool StrongestStats(const Stats* b1, const Stats* b2)
     {
-	return Army::StrongestTroop(b1->troop, b2->troop);
+	return army::StrongestTroop(b1->troop, b2->troop);
     }
 
     bool WeakestStats(const Stats* b1, const Stats* b2)
     {
-	return Army::WeakestTroop(b1->troop, b2->troop);
+	return army::WeakestTroop(b1->troop, b2->troop);
     }
 
     bool AllowPart1(const Stats* b)
@@ -2185,7 +2185,7 @@ namespace Battle2
     }
 }
 
-Battle2::Armies::Armies(Army::army_t & a) : parent(a)
+Battle2::Armies::Armies(army::Army & a) : parent(a)
 {
     reserve(a.troops.size());
     Init();
@@ -2195,7 +2195,7 @@ void Battle2::Armies::Init(void)
 {
     clear();
 
-    for(Army::Troops::iterator
+    for(army::Troops::iterator
         it = parent.troops.begin(); it != parent.troops.end(); ++it)
             if((*it).isValid() && (*it).GetBattleStats()) push_back((*it).GetBattleStats());
 }
@@ -2251,8 +2251,8 @@ Battle2::Stats* Battle2::Armies::FindMode(u32 mod)
 
 Battle2::Stats* Battle2::Armies::CreateNewStats(const Monster & mons, u32 count)
 {
-    Army::Troops & armies = parent.troops;
-    Army::Troops::reverse_iterator it = armies.rbegin();
+    army::Troops & armies = parent.troops;
+    army::Troops::reverse_iterator it = armies.rbegin();
 
     // find free invalid
     while(it != armies.rend() && (*it).GetBattleStats()) ++it;

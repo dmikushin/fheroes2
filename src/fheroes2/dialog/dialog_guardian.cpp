@@ -237,7 +237,7 @@ bool Dialog::SetGuardian(Heroes & hero, Troop & troop, CapturedObject & co, bool
 		    // swap
 		    else
 		    {
-			Army::SwapTroops(*troop1, troop);
+			army::SwapTroops(*troop1, troop);
 		    }
 		}
 
@@ -293,7 +293,7 @@ bool Dialog::SetGuardian(Heroes & hero, Troop & troop, CapturedObject & co, bool
 		    // swap
 		    else
 		    {
-			Army::SwapTroops(*troop1, troop);
+			army::SwapTroops(*troop1, troop);
 		    }
 		}
 

@@ -31,7 +31,7 @@ typedef std::vector<int>	Directions;
 
 namespace Direction
 {
-    enum
+    enum vector_t
     {
 	UNKNOWN		= 0x0000,
 	TOP_LEFT	= 0x0001,

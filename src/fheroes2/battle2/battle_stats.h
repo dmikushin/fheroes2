@@ -109,7 +109,7 @@ namespace Battle2
     // battle troop stats
     struct Stats : public BitModes
     {
-	Stats(Army::Troop &);
+	Stats(army::Troop &);
 	~Stats();
 
 	void	InitContours(void);
@@ -216,8 +216,8 @@ namespace Battle2
 	u8	GetObstaclesPenalty(const Stats &) const;
 	bool	OutOfWalls(void) const;
 
-	const Army::army_t* GetArmy(void) const;
-	Army::army_t*       GetArmy(void);
+	const army::Army* GetArmy(void) const;
+	army::Army*       GetArmy(void);
 
 	const HeroBase* GetCommander(void) const;
 	HeroBase*       GetCommander(void);
@@ -227,7 +227,7 @@ namespace Battle2
 
 	static bool isHandFighting(const Stats &, const Stats &);
 
-	Army::Troop & troop;
+	army::Troop & troop;
 	Arena* arena;
 
 	u16	id;
@@ -251,7 +251,7 @@ namespace Battle2
 
     struct Armies : public std::vector<Stats*>
     {
-	Armies(Army::army_t &);
+	Armies(army::Army &);
 
 	void Init(void);
 
@@ -272,7 +272,7 @@ namespace Battle2
 
 	static Stats* GetStats(Armies &, Armies &, Stats* last, bool part1);
 
-	Army::army_t & parent;
+	army::Army & parent;
     };
 }
 

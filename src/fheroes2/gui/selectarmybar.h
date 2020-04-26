@@ -47,7 +47,7 @@ public:
     bool	SaveLastTroop(void) const;
     bool	isValid(void) const;
 
-    void 	SetArmy(Army::army_t&);
+    void 	SetArmy(army::Army&);
     void 	ResetArmy(void);
     void 	SetPos(const Point &);
     void 	SetPos(s16, s16);
@@ -70,10 +70,10 @@ public:
     static bool QueueEventProcessing(SelectArmyBar &, SelectArmyBar &, std::string* msg = NULL);
 
 private:
-    static void StatusMessageEvent1(const SelectArmyBar &, u8, const Army::Troop &, std::string &);
-    static void StatusMessageEvent2(u8, u8, const Army::Troop &, const Army::Troop &, bool, std::string &);
+    static void StatusMessageEvent1(const SelectArmyBar &, u8, const army::Troop &, std::string &);
+    static void StatusMessageEvent2(u8, u8, const army::Troop &, const army::Troop &, bool, std::string &);
 
-    Army::army_t *	army;
+    army::Army *	army;
     Rect		pos;
     u8			interval;
     s8			selected;

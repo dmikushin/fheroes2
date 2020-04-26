@@ -283,18 +283,18 @@ void Interface::StatusWindow::DrawArmyInfo(int oh) const
 
 	if(4 > count)
 	{
-	    Army::DrawMons32LineShort(*armies, pos.x, pos.y + 20 + oh, 144, 0, 0);
+	    army::DrawMons32LineShort(*armies, pos.x, pos.y + 20 + oh, 144, 0, 0);
 	}
 	else
 	if(5 > count)
 	{
-	    Army::DrawMons32LineShort(*armies, pos.x, pos.y + 15 + oh, 110, 0, 2);
-	    Army::DrawMons32LineShort(*armies, pos.x + 20, pos.y + 30 + oh, 120, 2, 2);
+	    army::DrawMons32LineShort(*armies, pos.x, pos.y + 15 + oh, 110, 0, 2);
+	    army::DrawMons32LineShort(*armies, pos.x + 20, pos.y + 30 + oh, 120, 2, 2);
 	}
 	else
 	{
-	    Army::DrawMons32LineShort(*armies, pos.x, pos.y + 15 + oh, 140, 0, 3);
-	    Army::DrawMons32LineShort(*armies, pos.x + 10, pos.y + 30 + oh, 120, 3, 2);
+	    army::DrawMons32LineShort(*armies, pos.x, pos.y + 15 + oh, 140, 0, 3);
+	    army::DrawMons32LineShort(*armies, pos.x + 10, pos.y + 30 + oh, 120, 3, 2);
 	}
     }
 }

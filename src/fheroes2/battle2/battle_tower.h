@@ -31,7 +31,7 @@ class Castle;
 
 namespace Battle2
 {
-    class Tower : public Army::Troop
+    class Tower : public army::Troop
     {
     public:
 	Tower(const Castle &, u8, Arena &);

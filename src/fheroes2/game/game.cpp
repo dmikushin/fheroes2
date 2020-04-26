@@ -474,7 +474,7 @@ std::string Game::CountScoute(u32 count, int scoute, bool shorts)
             break;
 
         default:
-            return Army::SizeString(count);
+            return army::SizeString(count);
     }
 
     if(res.empty())

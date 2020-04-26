@@ -402,7 +402,7 @@ void FH2LocalClient::SendHeroesSwapArtifacts(const Heroes & hero1, u8 index1, co
     client.Send(packet);
 }
 
-void FH2LocalClient::SendArmyUpgradeTroop(const Army::army_t & army, u8 index)
+void FH2LocalClient::SendArmyUpgradeTroop(const army::Army & army, u8 index)
 {
     const HeroBase* commander = army.GetCommander();
     if(!Network::isLocalClient() || !commander) return;
@@ -419,7 +419,7 @@ void FH2LocalClient::SendArmyUpgradeTroop(const Army::army_t & army, u8 index)
     client.Send(packet);
 }
 
-void FH2LocalClient::SendArmyDismissTroop(const Army::army_t & army, u8 index)
+void FH2LocalClient::SendArmyDismissTroop(const army::Army & army, u8 index)
 {
     const HeroBase* commander = army.GetCommander();
     if(!Network::isLocalClient() || !commander) return;
@@ -436,7 +436,7 @@ void FH2LocalClient::SendArmyDismissTroop(const Army::army_t & army, u8 index)
     client.Send(packet);
 }
 
-void FH2LocalClient::SendArmySwapTroops(const Army::army_t & army1, u8 index1, const Army::army_t & army2, u8 index2)
+void FH2LocalClient::SendArmySwapTroops(const army::Army & army1, u8 index1, const army::Army & army2, u8 index2)
 {
     const HeroBase* commander1 = army1.GetCommander();
     const HeroBase* commander2 = army2.GetCommander();
@@ -457,7 +457,7 @@ void FH2LocalClient::SendArmySwapTroops(const Army::army_t & army1, u8 index1, c
     client.Send(packet);
 }
 
-void FH2LocalClient::SendArmySplitTroop(const Army::army_t & army1, u8 index1, const Army::army_t & army2, u8 index2, u16 count)
+void FH2LocalClient::SendArmySplitTroop(const army::Army & army1, u8 index1, const army::Army & army2, u8 index2, u16 count)
 {
     const HeroBase* commander1 = army1.GetCommander();
     const HeroBase* commander2 = army2.GetCommander();
@@ -479,7 +479,7 @@ void FH2LocalClient::SendArmySplitTroop(const Army::army_t & army1, u8 index1, c
     client.Send(packet);
 }
 
-void FH2LocalClient::SendArmyJoinTroops(const Army::army_t & army1, u8 index1, const Army::army_t & army2, u8 index2)
+void FH2LocalClient::SendArmyJoinTroops(const army::Army & army1, u8 index1, const army::Army & army2, u8 index2)
 {
     const HeroBase* commander1 = army1.GetCommander();
     const HeroBase* commander2 = army2.GetCommander();
@@ -500,7 +500,7 @@ void FH2LocalClient::SendArmyJoinTroops(const Army::army_t & army1, u8 index1, c
     client.Send(packet);
 }
 
-void FH2LocalClient::SendArmyCombatFormation(const Army::army_t & army)
+void FH2LocalClient::SendArmyCombatFormation(const army::Army & army)
 {
     const HeroBase* commander = army.GetCommander();
     if(!Network::isLocalClient() || !commander) return;
