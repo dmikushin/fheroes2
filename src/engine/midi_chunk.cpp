@@ -97,7 +97,7 @@ bool Chunk::Read(std::istream & i)
     i.read(id, 4);
 
     i.read(reinterpret_cast<char *>(&size), 4);
-    SwapBE32(size);
+    SDL_SwapBE32(size);
 
     if(data) delete [] data;
     data = NULL;
@@ -117,7 +117,7 @@ bool Chunk::Read(const std::vector<u8> & b)
 
     memcpy(id, &b[0], 4);
 
-    size = ReadBE32(&b[4]);
+    size = SDL_ReadBE32(const_cast<SDL_RWops *>(reinterpret_cast<const SDL_RWops *>(&b[4])));
 
     if(data) delete [] data;
     data = NULL;
@@ -139,7 +139,7 @@ bool Chunk::Read(const u8 *p)
 
     memcpy(id, p, 4);
 
-    size = ReadBE32(&p[4]);
+    size = SDL_ReadBE32(const_cast<SDL_RWops *>(reinterpret_cast<const SDL_RWops *>(&p[4])));
 
     if(data) delete [] data;
     data = NULL;
@@ -160,7 +160,7 @@ bool Chunk::Write(std::ostream & o) const
     o.write(id, 4);
 
     u32 x = size;
-    SwapBE32(x);
+    SDL_SwapBE32(x);
     o.write(reinterpret_cast<char *>(&x), 4);
 
     if(size && data) o.write(reinterpret_cast<char *>(data), size);
@@ -174,7 +174,7 @@ bool Chunk::Write(u8 *p) const
 
     memcpy(p, id, 4);
 
-    WriteBE32(&p[4], size);
+    SDL_WriteBE32(reinterpret_cast<SDL_RWops *>(&p[4]), size);
 
     if(size && data) memcpy(&p[8], data, size);
 

@@ -151,7 +151,7 @@ bool MTrk::Write(std::ostream & o) const
     for(; it1 != it2; ++it1) if(*it1) size += (*it1)->Size();
 
     u32 x = size;
-    SwapBE32(x);
+    SDL_SwapBE32(x);
     o.write(reinterpret_cast<char *>(&x), 4);
 
     if(events.size())
@@ -177,7 +177,7 @@ bool MTrk::Write(u8 *p) const
     for(; it1 != it2; ++it1) if(*it1) size += (*it1)->Size();
 
     u32 x = size;
-    WriteBE32(p, x);
+    SDL_WriteBE32(reinterpret_cast<SDL_RWops *>(p), x);
     p+= 4;
 
     if(events.size())
